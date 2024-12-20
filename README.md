@@ -2,10 +2,6 @@
 Enhancing Fairness in Chest X-Ray Diagnostics with Synthetic Data
 
 
-Here’s the updated `README.md` with the note about the draft notebooks:
-
----
-
 # 📊 Bridging the Fairness Gap in Medical Imaging Classification
 
 Welcome to the repository! 🎉 This project is part of a **course research project** titled **Bridging the Fairness Gap in Medical Imaging Classification**, conducted under the supervision of **Dr. Laleh Seyyed Kalantari**. Below is an overview of the repository and the critical insights behind this research.
@@ -43,6 +39,15 @@ This research focuses on **addressing fairness in chest X-ray classification** f
    - 🚀 Simplified experience for curating datasets, preparing JSON outputs, and organizing results.
 2. **`FINAL_ANALYSIS.ipynb`**:
    - 🎯 Uses JSON outputs to analyze experiments, visualize findings, and interpret results.
+
+### ⚙️ Config Folder
+
+- The **`config`** folder contains all the **configuration files** for the experiments conducted in this project.
+- Each configuration file outlines:
+  - **Training methods** and the parameters used for specific experiments.
+  - Details about the **training datasets**, including real and synthetic data.
+  - Information on **testing and validation datasets** for performance evaluation.
+- This setup ensures reproducibility, allowing anyone to replicate or adjust the experiments with ease.
 
 ---
 
@@ -82,8 +87,7 @@ This work demonstrates that **targeted synthetic data strategies** can address r
 
 ---
 
-## 🤝 Thank you for exploring this repository! 🙌 
-
----
+## 🤝 Thank you for exploring this repository! 🙌
 
 🎉 **Happy analyzing and visualizing!**
+
