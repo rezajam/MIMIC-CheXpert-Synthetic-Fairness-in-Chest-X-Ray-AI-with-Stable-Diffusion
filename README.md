@@ -68,6 +68,19 @@ This research focuses on **addressing fairness in chest X-ray classification** f
 
 ---
 
+## 🗂️ Datasets Used
+
+This project uses the following datasets for training and evaluation:
+- **MIMIC-CXR**: A large, diverse dataset with real-world metadata for robustness.
+- **CheXpert**: A high-quality labeled dataset known for its accuracy.
+- **Synthetic Data**: Generated from MIMIC-CXR using **Stable Diffusion** to complement real-world data.
+
+⚠️ **Important Note**: Due to **privacy and access restrictions**, the datasets used in this research (MIMIC-CXR, CheXpert, and the synthetic data) are **not provided in this repository**.  
+- Access to MIMIC-CXR and CheXpert requires individual registration and adherence to their respective licensing and usage agreements.
+- Synthetic data is derived from MIMIC-CXR and cannot be shared due to ethical considerations.
+
+---
+
 ## 📊 Results Highlights
 
 ### Key Findings:
@@ -87,7 +100,7 @@ This work demonstrates that **targeted synthetic data strategies** can address r
 
 ---
 
-## 🤝 Thank you for exploring this repository! 🙌
+## 🤝 Thank you for exploring this repository! 🙌 
 
 🎉 **Happy analyzing and visualizing!**
 
