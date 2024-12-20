@@ -1,0 +1,131 @@
+seed_everything: 19
+
+
+trainer:
+  default_root_dir: ./results/final_mimic_real_all/
+  accelerator: gpu
+  devices: 1  # Change this number to the number of GPUs you have
+  # strategy: ddp
+  # max_epochs: 1
+  max_epochs: 100
+  #   # changes in AdvancedCLS
+  #   # def __len__(self):
+  #   #     # return self._num_images
+  #   #     return 100
+
+  callbacks:
+  - class_path: lightning.pytorch.callbacks.RichProgressBar
+  - class_path: lightning.pytorch.callbacks.EarlyStopping
+    init_args:
+        monitor: 'val_loss'
+        patience: 4
+        mode: 'min'  # or 'max' depending on your metric
+  - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+    init_args:
+        monitor: 'val_loss'
+        mode: 'min'  # or 'max' depending on your metric
+        # save_top_k: 3  # save only the best checkpoint
+        save_top_k: 1  # save only the best checkpoint
+        dirpath: ${trainer.default_root_dir}checkpoints/
+        filename: 'best_val_loss-{epoch:02d}-{val_loss:.4f}'
+
+  
+
+data: # data.moudle.DataModule
+  global_variable:
+    # image_root_path: /datasets/mimic/resized/mimic-cxr-jpg/2.0.0/
+    # [me]: REAL mimic images
+    image_root_path:  /local/data/physionet.org/files/mimic-cxr-jpg/2.0.0/
+    # for prediction process or training process?
+    # use_frontal: True
+    use_frontal: False
+    shuffle: False
+    # shuffle: False
+    prediction_on: "test"
+    # prediction_on: "val"
+
+  train_dataset:
+    class_path: data.image.dataset_class.AdvancedCLS
+    init_args:
+        # csv_path: /home/hhamidi/clean/per_storage/csvs/mimic/mimic_train_fairness.csv
+        csv_path: /local/home/rezajam/project/med-stable-diffusion/data/csv/mimic/mimic_train.csv 
+        image_root_path: ${data.global_variable.image_root_path}
+        train_cols:
+          - Cardiomegaly
+          - Edema
+          - Consolidation
+          - Atelectasis
+          - Pleural Effusion
+          - No Finding
+        use_upsampling: False
+        shuffle: ${data.global_variable.shuffle}
+        use_frontal: ${data.global_variable.use_frontal}
+        image_size: 224
+        mode: train
+        class_index: -1
+  val_dataset:
+    class_path: data.image.dataset_class.AdvancedCLS
+    init_args:
+        # csv_path: /home/hhamidi/clean/per_storage/csvs/mimic/mimic_val_fairness.csv
+        csv_path: /local/home/rezajam/project/med-stable-diffusion/data/csv/mimic/mimic_val.csv 
+        image_root_path: ${data.global_variable.image_root_path}
+        train_cols:
+          - Cardiomegaly
+          - Edema
+          - Consolidation
+          - Atelectasis
+          - Pleural Effusion
+          - No Finding
+        use_upsampling: False
+        shuffle: ${data.global_variable.shuffle}
+        use_frontal: ${data.global_variable.use_frontal}
+        image_size: 224
+        mode: val
+        class_index: -1
+  test_dataset:
+    class_path: data.image.dataset_class.AdvancedCLS
+    init_args:
+        # csv_path: /home/hhamidi/clean/per_storage/csvs/mimic/mimic_test_fairness.csv
+        csv_path: /local/home/rezajam/project/med-stable-diffusion/data/csv/mimic/mimic_test.csv 
+        image_root_path: ${data.global_variable.image_root_path}
+        train_cols:
+          - Cardiomegaly
+          - Edema
+          - Consolidation
+          - Atelectasis
+          - Pleural Effusion
+          - No Finding
+        use_upsampling: False
+        shuffle: ${data.global_variable.shuffle}
+        use_frontal: ${data.global_variable.use_frontal}
+        image_size: 224
+        mode: test
+        class_index: -1
+
+
+  batch_size: 32
+  num_workers: 40
+  # batch_size: 16  # Lower batch size for controlled memory usage
+  # num_workers: 4  # Reduce for consistent behavior, especially on smaller setups
+  prediction_on: ${data.global_variable.prediction_on}
+
+
+model: # models.module.CLS
+  model:
+    class_path: models.image.models.DensNetWithHead
+    init_args:
+      hidden_layer_sizes: [768,128]
+      dropout_rate: 0.1
+      # dropout_rate: 0.2  # Increase dropout slightly to prevent overfitting in small runs
+      num_classes: 6
+  criterion: # torch.nn.BCEWithLogitsLoss
+    class_path: torch.nn.BCEWithLogitsLoss
+  weight_decay: 0.0
+  # weight_decay: 0.0001 # Add slight regularization
+  prediction_on: ${data.global_variable.prediction_on}
+  save_probabilities_path: ${trainer.default_root_dir}probabilities/
+  lr: 0.0001
+  # lr: 0.0005  # Faster learning rate for quick testing
+
+  # CUDA_VISIBLE_DEVICES=0 python main.py fit -c ./configs/final_mimic_real_all.yaml
+  # CUDA_VISIBLE_DEVICES=1 python main.py predict -c ./configs/final_mimic_real_all.yaml --ckpt_path /local/home/rezajam/fairness_on_embeddings/results/final_mimic_real_all/checkpoints/best_val_loss-epoch=00-val_loss=0.3484.ckpt
